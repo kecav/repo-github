@@ -1,25 +1,28 @@
-import React, { useState, useEffect } from 'react';
+// src/App.jsx
+import React, { useEffect } from 'react';
 import axios from 'axios';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { setUser, setLoading } from './store';
 import LoginScreen from './components/LoginScreen';
 import RepoContentScreen from './components/RepoContentScreen';
 
 const App = () => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const user = useSelector(state => state.user.user);
+  const loading = useSelector(state => state.user.loading);
 
   useEffect(() => {
     // Check if user is authenticated
     axios.get('http://localhost:4000/api/user', { withCredentials: true })
       .then(response => {
-        setUser(response.data);
-        setLoading(false);
+        dispatch(setUser(response.data));
       })
       .catch(error => {
         console.error('Not authenticated', error);
-        setLoading(false);
+        dispatch(setLoading(false));
       });
-  }, []);
+  }, [dispatch]);
 
   if (loading) {
     return <div>Loading...</div>;
